@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#CC0000">
+<meta name="msapplication-TileColor" content="#CC0000">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EQS OrderTrack">
+<meta name="application-name" content="EQS OrderTrack">
+<meta name="description" content="Gestão de Ordens de Serviço — EQS Engenharia">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="./icons/icon-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png">
+<title>EQS OrderTrack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080808;--sf:#121212;--sf2:#1A1A1A;--sf3:#222;
+  --bd:#2A2A2A;--bd2:#383838;
+  --red:#CC0000;--rl:#FF2222;--rd:#8A0000;--rg:rgba(204,0,0,.28);
+  --yel:#FFD700;--yg:rgba(255,215,0,.2);
+  --g3:#AAA;--g5:#666;--g7:#333;
+  --blu:#3D8BFF;--bblu:rgba(61,139,255,.18);
+  --grn:#22C55E;--bgrn:rgba(34,197,94,.18);
+  --orn:#FF6B35;--born:rgba(255,107,53,.18);
+  --fd:'Bebas Neue',sans-serif;--fc:'Barlow Condensed',sans-serif;--fb:'Barlow',sans-serif;
+  --r:10px;--rl2:14px;--t:.2s ease;--hh:62px;--th:50px;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:#fff;font-family:var(--fb);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+
+/* ── LOGIN ── */
+#LS{position:fixed;inset:0;z-index:1000;background:linear-gradient(160deg,#0C0000,#080808 40%,#0A0A1A);display:flex;align-items:center;justify-content:center;padding:24px}
+.lbox{width:100%;max-width:390px;background:var(--sf);border:1px solid rgba(204,0,0,.2);border-radius:20px;padding:36px 28px;box-shadow:0 0 60px rgba(204,0,0,.12),0 24px 48px rgba(0,0,0,.5);animation:lIn .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes lIn{from{transform:translateY(30px) scale(.95);opacity:0}to{transform:none;opacity:1}}
+.l-logo{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.l-ico{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,var(--red),var(--rd));display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:18px;color:#fff;box-shadow:0 0 24px var(--rg);flex-shrink:0}
+.l-brand{font-family:var(--fd);font-size:28px;letter-spacing:2px}
+.l-sub{font-family:var(--fc);font-size:11px;letter-spacing:3px;color:var(--red);text-transform:uppercase}
+.l-w{font-family:var(--fd);font-size:22px;letter-spacing:1px;margin-bottom:5px}
+.l-h{color:var(--g5);font-size:13px;margin-bottom:22px}
+.l-lbl{display:block;font-family:var(--fc);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--g5);margin-bottom:6px}
+.l-inp{width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:13px 14px;color:#fff;font-family:var(--fb);font-size:15px;outline:none;transition:var(--t);margin-bottom:18px}
+.l-inp:focus{border-color:var(--red);box-shadow:0 0 0 2px var(--rg)}
+.l-inp::placeholder{color:var(--g7)}
+.l-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--red),var(--rd));border:none;border-radius:10px;color:#fff;font-family:var(--fd);font-size:18px;letter-spacing:2px;cursor:pointer;transition:var(--t);box-shadow:0 4px 20px var(--rg)}
+.l-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px var(--rg)}
+.l-div{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--g7);font-size:12px}
+.l-div::before,.l-div::after{content:'';flex:1;height:1px;background:var(--bd)}
+.l-ft{margin-top:18px;text-align:center;font-size:11.5px;color:var(--g7)}
+.su-lbl{font-family:var(--fc);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--g5);margin-bottom:8px}
+.su-list{display:flex;flex-direction:column;gap:6px;margin-bottom:4px}
+.su-btn{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:9px 12px;color:var(--g3);text-align:left;cursor:pointer;font-family:var(--fb);font-size:13px;display:flex;align-items:center;gap:8px;transition:var(--t);width:100%}
+.su-btn:hover{border-color:var(--red);color:#fff}
+.su-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--rd));display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:13px;color:#fff;flex-shrink:0}
+
+/* ── HEADER ── */
+.hdr{position:fixed;top:0;left:0;right:0;height:var(--hh);background:linear-gradient(135deg,#0C0000,#1A0000 45%,#0C0000);border-bottom:1px solid rgba(204,0,0,.25);display:flex;align-items:center;padding:0 14px;gap:10px;z-index:100;box-shadow:0 2px 24px rgba(204,0,0,.2)}
+.logo-w{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.logo-i{width:40px;height:40px;background:linear-gradient(135deg,var(--red),var(--rd));border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:15px;color:#fff;box-shadow:0 0 18px var(--rg),inset 0 1px 0 rgba(255,255,255,.15);flex-shrink:0}
+.logo-t .brand{font-family:var(--fd);font-size:22px;letter-spacing:2px;color:#fff;display:block;line-height:1}
+.logo-t .sub{font-family:var(--fc);font-size:10px;letter-spacing:3px;color:var(--red);text-transform:uppercase;opacity:.9}
+.hdr-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+.srch-w{position:relative;width:180px}
+@media(min-width:480px){.srch-w{width:240px}}
+.srch-w svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--g5);pointer-events:none}
+.srch{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--bd);border-radius:24px;padding:9px 14px 9px 36px;color:#fff;font-family:var(--fb);font-size:13px;outline:none;transition:var(--t)}
+.srch::placeholder{color:var(--g5)}
+.srch:focus{border-color:var(--red);background:rgba(204,0,0,.06);box-shadow:0 0 0 2px var(--rg)}
+.hbtn{display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border-radius:8px;border:1px solid var(--bd);background:rgba(255,255,255,.05);color:var(--g3);font-family:var(--fc);font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;transition:var(--t);flex-shrink:0;white-space:nowrap}
+.hbtn:hover{border-color:var(--red);color:#fff}
+.hbtn.on{border-color:var(--red);color:var(--red);background:var(--rg)}
+.nbtn{width:36px;height:36px;background:rgba(255,255,255,.05);border:1px solid var(--bd);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:var(--t);flex-shrink:0}
+.nbtn:hover{border-color:var(--yel)}
+.nbtn.alert{border-color:rgba(255,215,0,.55);color:var(--yel);animation:bellPulse 1.4s ease-in-out infinite}
+.ndot{position:absolute;top:4px;right:4px;width:9px;height:9px;background:var(--red);border-radius:50%;border:2px solid var(--bg);display:none}
+.ndot.on{display:block;animation:pr 2s infinite}
+@keyframes pr{0%,100%{box-shadow:0 0 0 0 rgba(204,0,0,.5)}60%{box-shadow:0 0 0 5px rgba(204,0,0,0)}}
+@keyframes bellPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,215,0,.22)}50%{box-shadow:0 0 0 6px rgba(255,215,0,0)}}
+.uchip{display:flex;align-items:center;gap:7px;flex-shrink:0;cursor:pointer;background:rgba(255,255,255,.05);border:1px solid var(--bd);border-radius:24px;padding:5px 10px 5px 7px;transition:var(--t)}
+.uchip:hover{border-color:var(--red)}
+.uav{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--rd));display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:13px;color:#fff;flex-shrink:0}
+.unm{font-family:var(--fc);font-size:12px;font-weight:700;color:#fff;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── TABS ── */
+.tabs{position:fixed;top:var(--hh);left:0;right:0;height:var(--th);background:var(--sf);border-bottom:1px solid var(--bd);display:flex;overflow-x:auto;z-index:99;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tb{flex-shrink:0;display:flex;align-items:center;gap:5px;padding:0 16px;height:100%;background:none;border:none;border-bottom:2px solid transparent;color:var(--g5);font-family:var(--fc);font-size:12.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;transition:color var(--t),border-color var(--t);white-space:nowrap}
+.tb.act{color:#fff;border-bottom-color:var(--red)}
+.tb:hover:not(.act){color:var(--g3)}
+.tbd{background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:10px;min-width:17px;text-align:center;display:none}
+.tbd.on{display:inline-block}
+.by{background:var(--yel);color:#000}.bb{background:var(--blu)}.bg{background:var(--grn)}.bo{background:var(--orn)}
+
+/* ── FILTER BAR ── */
+.fbar{background:var(--sf2);border-bottom:1px solid var(--bd);padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;position:fixed;top:calc(var(--hh) + var(--th));left:0;right:0;z-index:98;transform:translateY(-110%);opacity:0;pointer-events:none;transition:transform .3s ease,opacity .3s ease}
+.fbar.open{transform:translateY(0);opacity:1;pointer-events:all}
+.fb-l{font-family:var(--fc);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--g5);flex-shrink:0}
+.fb-i{background:var(--sf3);border:1px solid var(--bd);border-radius:8px;padding:7px 10px;color:#fff;font-family:var(--fb);font-size:12.5px;outline:none;transition:var(--t)}
+.fb-i:focus{border-color:var(--red)}
+.fb-i[type=date]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.4)}
+.fb-s{color:var(--g7);flex-shrink:0}
+.fb-c{background:transparent;border:1px solid var(--bd);border-radius:8px;padding:7px 12px;color:var(--g5);font-family:var(--fc);font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;transition:var(--t)}
+.fb-c:hover{color:#fff;border-color:var(--bd2)}
+.fb-tag{background:rgba(204,0,0,.12);border:1px solid rgba(204,0,0,.3);border-radius:6px;padding:4px 10px;font-family:var(--fc);font-size:11px;font-weight:700;color:var(--red);display:flex;align-items:center;gap:5px}
+.fb-tag button{background:none;border:none;color:var(--red);cursor:pointer;font-size:13px;line-height:1;padding:0}
+
+/* ── CONTENT ── */
+.ct{position:fixed;top:calc(var(--hh) + var(--th));left:0;right:0;bottom:0;overflow-y:auto;padding:16px 14px 90px;-webkit-overflow-scrolling:touch;transition:top .3s ease}
+.ct.fo{top:calc(var(--hh) + var(--th) + 52px)}
+.pn{display:none}.pn.act{display:block}
+
+/* ── PAINEL ── */
+.greet h2{font-family:var(--fd);font-size:30px;letter-spacing:1.5px;line-height:1}
+.greet p{color:var(--g5);font-size:12.5px;margin-top:2px}
+.greet{margin-bottom:20px}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
+@media(min-width:560px){.sg{grid-template-columns:repeat(4,1fr)}}
+.sc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl2);padding:16px 14px;cursor:pointer;position:relative;overflow:hidden;transition:transform var(--t),border-color var(--t),box-shadow var(--t)}
+.sc::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%}
+.sc.cb::before{background:var(--blu)}.sc.cy::before{background:var(--yel)}.sc.cr::before{background:var(--red)}.sc.co::before{background:var(--orn)}
+.sc:hover{transform:translateY(-2px)}
+.sc.cb:hover{border-color:rgba(61,139,255,.5);box-shadow:0 4px 20px var(--bblu)}
+.sc.cy:hover{border-color:rgba(255,215,0,.5);box-shadow:0 4px 20px var(--yg)}
+.sc.cr:hover{border-color:rgba(204,0,0,.5);box-shadow:0 4px 20px var(--rg)}
+.sc.co:hover{border-color:rgba(255,107,53,.5);box-shadow:0 4px 20px var(--born)}
+.si{font-size:22px;margin-bottom:8px}
+.sn{font-family:var(--fd);font-size:40px;line-height:1;margin-bottom:4px}
+.cb .sn{color:var(--blu)}.cy .sn{color:var(--yel)}.cr .sn{color:#F44}.co .sn{color:var(--orn)}
+.sl{font-family:var(--fc);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--g5)}
+.stit{font-family:var(--fd);font-size:19px;letter-spacing:1px;color:#fff;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.stit small{font-family:var(--fb);font-size:12px;color:var(--g5);font-weight:400;letter-spacing:0}
+.osl{display:flex;flex-direction:column;gap:10px}
+
+/* ── HIST HEADER ── */
+.hh2{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.eb{display:flex;gap:7px}
+
+/* ── CARD ── */
+.oc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl2);overflow:hidden;position:relative;transition:border-color var(--t),box-shadow var(--t)}
+.oc:hover{border-color:var(--bd2)}
+.oc::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%}
+.oc[data-s=aberto]::before{background:var(--blu)}
+.oc[data-s=pendente]::before{background:var(--yel)}
+.oc[data-s=vencido]::before{background:var(--red)}
+.oc[data-s=prioridade]::before{background:var(--orn)}
+.oc[data-s=feito]::before{background:var(--grn)}
+.oc[data-s=vencido]{border-color:rgba(204,0,0,.25)}
+.oc[data-s=prioridade]{border-color:rgba(255,107,53,.25)}
+.oinn{padding:14px 14px 14px 20px}
+.oto{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px}
+.ons{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+/* ── CAMPO CHAMADO / AGENCIA ── */
+.tag-chamado{font-family:var(--fc);font-size:13px;font-weight:700;color:#fff;letter-spacing:.5px}
+.tag-sep{color:var(--bd2);font-size:14px}
+.tag-agencia{font-family:var(--fc);font-size:12px;font-weight:600;color:var(--blu);background:var(--bblu);border:1px solid rgba(61,139,255,.2);border-radius:5px;padding:1px 7px}
+.sb2{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;flex-shrink:0;font-family:var(--fc);font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.sb2.aberto{background:var(--bblu);color:var(--blu);border:1px solid rgba(61,139,255,.35)}
+.sb2.pendente{background:var(--yg);color:var(--yel);border:1px solid rgba(255,215,0,.35)}
+.sb2.vencido{background:var(--rg);color:#F55;border:1px solid rgba(204,0,0,.4);animation:pr 2.2s infinite}
+.sb2.prioridade{background:var(--born);color:var(--orn);border:1px solid rgba(255,107,53,.35)}
+.sb2.feito{background:var(--bgrn);color:var(--grn);border:1px solid rgba(34,197,94,.35)}
+.odsc{color:var(--g3);font-size:13px;line-height:1.55;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ometa{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.mi{display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--g5)}
+.mi.od{color:#F55}.mi.pdf{color:#CC9900}.mi.soon{color:var(--yel)}
+.oact{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:8px;border:none;cursor:pointer;font-family:var(--fc);font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;transition:all var(--t);flex-shrink:0;white-space:nowrap}
+.bp{background:var(--red);color:#fff}.bp:hover{background:var(--rl);box-shadow:0 0 14px var(--rg)}
+.bg2{background:var(--sf3);color:var(--g3);border:1px solid var(--bd)}.bg2:hover{background:var(--sf2);color:#fff;border-color:var(--bd2)}
+.bd2{background:transparent;color:var(--rl);border:1px solid rgba(204,0,0,.3)}.bd2:hover{background:var(--rg)}
+.bsu{background:var(--bgrn);color:var(--grn);border:1px solid rgba(34,197,94,.35)}.bsu:hover{background:rgba(34,197,94,.28)}
+.bxl{background:rgba(34,197,94,.1);color:var(--grn);border:1px solid rgba(34,197,94,.3)}.bxl:hover{background:rgba(34,197,94,.2)}
+.bpd{background:rgba(204,0,0,.1);color:#F55;border:1px solid rgba(204,0,0,.3)}.bpd:hover{background:rgba(204,0,0,.2)}
+.bsm{padding:5px 10px;font-size:11px}
+.ss{background:var(--sf3);color:var(--g3);border:1px solid var(--bd);border-radius:8px;padding:6px 10px;font-family:var(--fc);font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;outline:none;transition:var(--t)}
+.ss:hover{border-color:var(--bd2)}
+.ss option{background:var(--sf2)}
+
+/* ── FAB ── */
+.fab{position:fixed;bottom:22px;right:18px;width:58px;height:58px;background:linear-gradient(135deg,var(--red),var(--rd));border:none;border-radius:16px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 22px var(--rg),0 2px 8px rgba(0,0,0,.5);z-index:200;transition:transform var(--t),box-shadow var(--t)}
+.fab:hover{transform:translateY(-3px) scale(1.06);box-shadow:0 8px 32px var(--rg)}
+.fab:active{transform:scale(.94)}
+
+/* ── MODAL ── */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(5px);z-index:300;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease}
+.ov.open{opacity:1;pointer-events:all}
+@media(min-width:600px){.ov{align-items:center}}
+.mdl{background:var(--sf);border:1px solid var(--bd2);border-radius:var(--rl2) var(--rl2) 0 0;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;transform:translateY(100%);transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.ov.open .mdl{transform:translateY(0)}
+@media(min-width:600px){.mdl{border-radius:var(--rl2);transform:scale(.88) translateY(10px)}.ov.open .mdl{transform:scale(1) translateY(0)}}
+.mhd{padding:18px 18px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bd);position:sticky;top:0;background:var(--sf);z-index:1}
+.mhd h2{font-family:var(--fd);font-size:22px;letter-spacing:1.5px;color:#fff}
+.mcl{width:32px;height:32px;background:var(--sf3);border:1px solid var(--bd);border-radius:8px;color:var(--g3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--t)}
+.mcl:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.mbd{padding:16px 18px 18px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg{margin-bottom:14px}.fg.full{grid-column:1/-1}
+.fl{display:block;font-family:var(--fc);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--g5);margin-bottom:5px}
+.fc2{width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;color:#fff;font-family:var(--fb);font-size:14px;outline:none;transition:var(--t)}
+.fc2:focus{border-color:var(--red);box-shadow:0 0 0 2px var(--rg)}
+.fc2::placeholder{color:var(--g7)}
+textarea.fc2{resize:vertical;min-height:80px}
+input[type=date].fc2::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.5)}
+.ssel{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+@media(min-width:400px){.ssel{grid-template-columns:repeat(4,1fr)}}
+.ssel input[type=radio]{display:none}
+.ssel input[type=radio]+label{display:flex;align-items:center;justify-content:center;gap:4px;padding:9px 6px;border-radius:8px;border:1px solid var(--bd);background:var(--sf2);color:var(--g5);font-family:var(--fc);font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;transition:all var(--t);text-align:center}
+#ra:checked+label{color:var(--blu);background:var(--bblu);border-color:var(--blu)}
+#rp:checked+label{color:var(--yel);background:var(--yg);border-color:var(--yel)}
+#rv:checked+label{color:#F55;background:var(--rg);border-color:var(--red)}
+#rpr:checked+label{color:var(--orn);background:var(--born);border-color:var(--orn)}
+.pda{border:2px dashed var(--bd);border-radius:10px;padding:22px 16px;text-align:center;cursor:pointer;transition:all var(--t);position:relative}
+.pda:hover{border-color:var(--red);background:rgba(204,0,0,.04)}
+.pda input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
+.pdi{font-size:26px;margin-bottom:6px;color:var(--g5)}
+.pdt{font-size:13px;color:var(--g5);margin-bottom:3px}
+.pdh{font-size:11px;color:var(--g7)}
+.pdp{display:flex;align-items:center;gap:10px;padding:11px;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;margin-top:6px}
+.pdi2{width:36px;height:36px;background:linear-gradient(135deg,var(--red),var(--rd));border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.pdin{flex:1;overflow:hidden}
+.pdn{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pds{font-size:11px;color:var(--g5)}
+.pdrm{background:none;border:none;color:var(--g5);cursor:pointer;padding:5px;border-radius:5px;transition:var(--t);flex-shrink:0}
+.pdrm:hover{color:var(--rl)}
+.mft{display:flex;gap:10px;justify-content:flex-end;padding-top:16px;border-top:1px solid var(--bd);margin-top:6px}
+
+/* ── DETAIL ── */
+.dd{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:12px;font-size:13.5px;color:var(--g3);line-height:1.65;white-space:pre-wrap;word-break:break-word;margin-bottom:14px}
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.df label{display:block;font-family:var(--fc);font-size:10.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--g5);margin-bottom:3px}
+.df p{font-size:14px;font-weight:500;color:#fff}
+.df p.od{color:#F55}
+
+/* ── NOTIF ── */
+.nov{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .2s ease}
+.nov.open{opacity:1;pointer-events:all}
+.npnl{position:fixed;top:calc(var(--hh) + 8px);right:12px;width:320px;max-height:430px;overflow-y:auto;background:var(--sf);border:1px solid var(--bd2);border-radius:var(--rl2);box-shadow:0 8px 40px rgba(0,0,0,.5);z-index:401;transform:translateY(-10px) scale(.95);opacity:0;pointer-events:none;transition:transform .25s ease,opacity .25s ease}
+.nov.open .npnl{transform:translateY(0) scale(1);opacity:1;pointer-events:all}
+.nhd{padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.nhd h3{font-family:var(--fd);font-size:17px;letter-spacing:1px}
+.nit{padding:12px 16px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background var(--t)}
+.nit:hover{background:var(--sf2)}
+.nit:last-child{border-bottom:none}
+.nios{font-family:var(--fc);font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}
+.nimsg{font-size:12px;color:var(--g5)}
+.nibdg{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;font-family:var(--fc);margin-bottom:5px}
+.nb-hj{background:rgba(204,0,0,.2);color:#F55;border:1px solid rgba(204,0,0,.4)}
+.nb-am{background:var(--yg);color:var(--yel);border:1px solid rgba(255,215,0,.35)}
+.nb-vc{background:var(--rg);color:#F55;border:1px solid rgba(204,0,0,.5)}
+.ne{padding:28px 16px;text-align:center;color:var(--g5);font-size:13px}
+
+/* ── EMPTY / TOAST ── */
+.empty{text-align:center;padding:60px 20px;color:var(--g5)}
+.ei{font-size:46px;margin-bottom:14px;opacity:.35}
+.empty h3{font-family:var(--fd);font-size:22px;letter-spacing:1px;color:var(--g5);margin-bottom:8px}
+.empty p{font-size:13px;max-width:260px;margin:0 auto}
+.tw{position:fixed;bottom:88px;right:14px;z-index:500;display:flex;flex-direction:column;gap:7px}
+.toast{background:var(--sf2);border:1px solid var(--bd2);border-radius:10px;padding:11px 15px;display:flex;align-items:center;gap:9px;font-size:13px;color:#fff;min-width:190px;max-width:300px;box-shadow:0 4px 20px rgba(0,0,0,.5);animation:tIn .28s ease forwards}
+@keyframes tIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes tOut{from{transform:translateX(0);opacity:1}to{transform:translateX(110%);opacity:0}}
+.toast.s .ti{color:var(--grn)}.toast.e .ti{color:var(--rl)}.toast.w .ti{color:var(--yel)}
+
+/* PWA INSTALL */
+#installBanner{display:none;position:fixed;bottom:0;left:0;right:0;z-index:999;background:linear-gradient(135deg,#1A0000,#0C0000);border-top:2px solid var(--red);padding:14px 16px;flex-direction:row;align-items:center;gap:12px;box-shadow:0 -4px 24px rgba(204,0,0,.3);animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+#installBanner .ib-ico{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--red),var(--rd));display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:14px;color:#fff;flex-shrink:0}
+#installBanner .ib-txt{flex:1}
+#installBanner .ib-t{font-family:var(--fd);font-size:16px;letter-spacing:1px;color:#fff}
+#installBanner .ib-s{font-size:12px;color:var(--g5);margin-top:1px;line-height:1.35}
+#installBanner .ib-btn{background:var(--red);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-family:var(--fd);font-size:14px;letter-spacing:1px;cursor:pointer;flex-shrink:0;box-shadow:0 0 14px var(--rg)}
+#installBanner .ib-cls{background:none;border:none;color:var(--g5);cursor:pointer;padding:6px;font-size:18px;flex-shrink:0}
+@media(max-width:480px){#installBanner{align-items:flex-start;padding:12px 10px;gap:9px}#installBanner .ib-ico{width:38px;height:38px;font-size:12px}#installBanner .ib-btn{padding:8px 10px;font-size:12px}#installBanner .ib-s{font-size:11.5px}}
+@media(max-width:640px){
+  :root{--hh:112px}
+  .hdr{height:var(--hh);padding:8px 10px;align-content:center;align-items:center;flex-wrap:wrap;gap:8px 10px}
+  .hdr-r{display:contents}
+  .logo-w{order:1;flex:0 0 auto;min-width:0;gap:8px}
+  .logo-i{width:38px;height:38px;border-radius:9px;font-size:13px}
+  .logo-t .brand{font-size:20px;letter-spacing:1.5px}
+  .logo-t .sub{font-size:8px;letter-spacing:2.5px}
+  .srch-w{order:2;flex:1 1 145px;width:auto;min-width:0}
+  .srch{height:36px;font-size:12.5px;padding:8px 10px 8px 34px}
+  .hbtn{order:3;height:34px;padding:7px 10px}
+  .nbtn{order:4;width:36px;height:34px;border-radius:12px}
+  .uchip{order:5;margin-left:auto;height:34px;max-width:138px;border-radius:12px;padding:4px 8px 4px 5px}
+  .uav{width:26px;height:26px}
+  .unm{max-width:78px}
+  .tabs{top:var(--hh)}
+  .npnl{top:calc(var(--hh) + 8px);right:8px;left:8px;width:auto;max-height:60vh}
+  .fbar{top:calc(var(--hh) + var(--th))}
+  .ct{top:calc(var(--hh) + var(--th))}
+  .ct.fo{top:calc(var(--hh) + var(--th) + 92px)}
+  .fbar{gap:7px;padding:9px 10px}
+  .fb-i{min-width:0;flex:1 1 120px}
+}
+@media(max-width:360px){.logo-t{display:none}.tb{padding:0 11px;font-size:11.5px}}
+</style>
+</head>
+<body>
+
+<!-- INSTALAR PWA -->
+<div id="installBanner">
+  <div class="ib-ico">EQS</div>
+  <div class="ib-txt">
+    <div class="ib-t" id="installTitle">INSTALAR APP</div>
+    <div class="ib-s" id="installText">Toque em INSTALAR para adicionar o app à tela inicial.</div>
+  </div>
+  <button class="ib-btn" id="installBtn">INSTALAR</button>
+  <button class="ib-cls" id="closeBanner" title="Fechar">&#x2715;</button>
+</div>
+
+<!-- LOGIN -->
+<div id="LS">
+<div class="lbox">
+  <div class="l-logo">
+    <div class="l-ico">EQS</div>
+    <div><div class="l-brand">OrderTrack</div><div class="l-sub">EQS Engenharia</div></div>
+  </div>
+  <div class="l-w">BEM-VINDO</div>
+  <div class="l-h">Identifique-se para acessar o sistema</div>
+  <div id="SU"></div>
+  <label class="l-lbl" for="LI">Seu nome completo</label>
+  <input class="l-inp" id="LI" type="text" placeholder="Ex: Joao Silva" maxlength="60" autocomplete="name">
+  <button class="l-btn" id="LB">ENTRAR NO SISTEMA</button>
+  <div class="l-ft">EQS Engenharia &mdash; Gestao de OS v2.0</div>
+</div>
+</div>
+
+<!-- APP -->
+<div id="AS" style="display:none">
+
+<header class="hdr">
+  <div class="logo-w">
+    <div class="logo-i">EQS</div>
+    <div class="logo-t"><span class="brand">OrderTrack</span><span class="sub">EQS Engenharia</span></div>
+  </div>
+  <div class="hdr-r">
+    <div class="srch-w">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input class="srch" id="SI" type="text" placeholder="Buscar chamado, agencia..." autocomplete="off">
+    </div>
+    <button class="hbtn" id="FTB">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>Filtro
+    </button>
+    <button class="nbtn" id="NB">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="ndot" id="ND"></span>
+    </button>
+    <div class="uchip" id="UC">
+      <div class="uav" id="UA">?</div>
+      <span class="unm" id="UN">-</span>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" id="TN">
+  <button class="tb act" data-tab="painel">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    Painel
+  </button>
+  <button class="tb" data-tab="aberto">&#x1F535; Em Aberto<span class="tbd bb" id="tb-aberto"></span></button>
+  <button class="tb" data-tab="pendente">&#x1F7E1; Pendentes<span class="tbd by" id="tb-pendente"></span></button>
+  <button class="tb" data-tab="vencido">&#x1F534; Vencidas<span class="tbd" id="tb-vencido"></span></button>
+  <button class="tb" data-tab="prioridade">&#x26A1; Prioridade<span class="tbd bo" id="tb-prioridade"></span></button>
+  <button class="tb" data-tab="feito">&#x2705; Concluidas<span class="tbd bg" id="tb-feito"></span></button>
+  <button class="tb" data-tab="historico">&#x1F4C1; Historico</button>
+</nav>
+
+<div class="fbar" id="FB">
+  <span class="fb-l">Periodo</span>
+  <input class="fb-i" id="FD" type="date">
+  <span class="fb-s">&#8594;</span>
+  <input class="fb-i" id="FA" type="date">
+  <select class="fb-i" id="FC">
+    <option value="dataLancamento">Lancamento</option>
+    <option value="dataVencimento">Vencimento</option>
+    <option value="createdAt">Criacao</option>
+  </select>
+  <button class="fb-c" id="FCL">&#x2715; Limpar</button>
+  <div class="fb-tag" id="FT" style="display:none"><span id="FTT"></span><button onclick="clearFilter()">&#x2715;</button></div>
+</div>
+
+<main class="ct" id="MC">
+  <div class="pn act" id="pane-painel">
+    <div class="greet"><h2 id="GT">BOM DIA</h2><p id="GD"></p></div>
+    <div class="sg">
+      <div class="sc cb" onclick="switchTab('aberto')"><div class="si">&#x1F4CB;</div><div class="sn" id="sn-aberto">0</div><div class="sl">Em Aberto</div></div>
+      <div class="sc cy" onclick="switchTab('pendente')"><div class="si">&#x23F3;</div><div class="sn" id="sn-pendente">0</div><div class="sl">Pendentes</div></div>
+      <div class="sc cr" onclick="switchTab('vencido')"><div class="si">&#x1F6A8;</div><div class="sn" id="sn-vencido">0</div><div class="sl">Vencidas</div></div>
+      <div class="sc co" onclick="switchTab('prioridade')"><div class="si">&#x26A1;</div><div class="sn" id="sn-prioridade">0</div><div class="sl">Prioridade</div></div>
+    </div>
+    <div class="stit">ORDENS ATIVAS <small id="AC"></small></div>
+    <div class="osl" id="list-painel"></div>
+  </div>
+  <div class="pn" id="pane-aberto"><div class="stit">EM ABERTO</div><div class="osl" id="list-aberto"></div></div>
+  <div class="pn" id="pane-pendente"><div class="stit">PENDENTES</div><div class="osl" id="list-pendente"></div></div>
+  <div class="pn" id="pane-vencido"><div class="stit">VENCIDAS &#x1F6A8;</div><div class="osl" id="list-vencido"></div></div>
+  <div class="pn" id="pane-prioridade"><div class="stit">PRIORIDADE &#x26A1;</div><div class="osl" id="list-prioridade"></div></div>
+  <div class="pn" id="pane-feito"><div class="stit">CONCLUIDAS &#x2705;</div><div class="osl" id="list-feito"></div></div>
+  <div class="pn" id="pane-historico">
+    <div class="hh2">
+      <div class="stit" style="margin-bottom:0">HISTORICO COMPLETO</div>
+      <div class="eb">
+        <button class="btn bsm bxl" onclick="exportExcel()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Excel
+        </button>
+        <button class="btn bsm bpd" onclick="exportPDF()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF
+        </button>
+      </div>
+    </div>
+    <div style="height:12px"></div>
+    <div class="osl" id="list-historico"></div>
+  </div>
+</main>
+
+<button class="fab" id="FAB">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
+</div>
+
+<!-- MODAL OS -->
+<div class="ov" id="OM">
+<div class="mdl">
+  <div class="mhd"><h2 id="MT">NOVA OS</h2><button class="mcl" id="CMO"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  <div class="mbd">
+    <div class="fr">
+      <div class="fg"><label class="fl" for="FCH">N do Chamado *</label><input class="fc2" id="FCH" placeholder="#4521" maxlength="40"></div>
+      <div class="fg"><label class="fl" for="FAG">Nome da Agencia *</label><input class="fc2" id="FAG" placeholder="Ex: Agencia Centro" maxlength="80"></div>
+    </div>
+    <div class="fg"><label class="fl" for="FDE">Descricao do Servico *</label><textarea class="fc2" id="FDE" placeholder="Descreva o servico a ser realizado..."></textarea></div>
+    <div class="fg">
+      <label class="fl">Status *</label>
+      <div class="ssel">
+        <input type="radio" id="ra" name="rs" value="aberto" checked><label for="ra">&#x1F535; Em Aberto</label>
+        <input type="radio" id="rp" name="rs" value="pendente"><label for="rp">&#x1F7E1; Pendente</label>
+        <input type="radio" id="rv" name="rs" value="vencido"><label for="rv">&#x1F534; Vencido</label>
+        <input type="radio" id="rpr" name="rs" value="prioridade"><label for="rpr">&#x26A1; Prioridade</label>
+      </div>
+    </div>
+    <div class="fg"><label class="fl" for="FRE">Responsavel</label><input class="fc2" id="FRE" placeholder="Nome do colaborador" maxlength="80"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl" for="FLA">Lancamento</label><input class="fc2" id="FLA" type="date"></div>
+      <div class="fg"><label class="fl" for="FVE">Vencimento</label><input class="fc2" id="FVE" type="date"></div>
+    </div>
+    <div class="fg">
+      <label class="fl">Anexar PDF</label>
+      <div class="pda" id="PDA"><input type="file" id="FPD" accept=".pdf" onchange="handlePDF(this)"><div class="pdi">&#x1F4CE;</div><div class="pdt">Clique ou arraste o PDF aqui</div><div class="pdh">Maximo 10 MB</div></div>
+      <div class="pdp" id="PDP" style="display:none">
+        <div class="pdi2">&#x1F4C4;</div>
+        <div class="pdin"><div class="pdn" id="PDN">-</div><div class="pds" id="PDS">-</div></div>
+        <button class="pdrm" onclick="removePDF()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn bg2" id="CB">Cancelar</button>
+      <button class="btn bp" id="SB">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Salvar OS
+      </button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- MODAL DETALHE -->
+<div class="ov" id="DM">
+<div class="mdl">
+  <div class="mhd"><h2 id="DT">OS</h2><button class="mcl" id="CDM"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  <div class="mbd" id="DB"></div>
+</div>
+</div>
+
+<!-- NOTIF -->
+<div class="nov" id="NOV">
+<div class="npnl" id="NP">
+  <div class="nhd"><h3>&#x1F514; ALERTAS DE VENCIMENTO</h3><button class="mcl" id="CPN"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  <div id="NL"></div>
+</div>
+</div>
+
+<div class="tw" id="TW"></div>
+
+<script>
+'use strict';
+var orders=[],tab='painel',q='',editId=null;
+var pdfData=null,pdfFileName=null,pdfFileSize=null;
+var fDe='',fAte='',fCampo='dataLancamento',fOpen=false;
+var curUser='';
+var SL={aberto:'Em Aberto',pendente:'Pendente',vencido:'Vencido',prioridade:'Prioridade',feito:'Concluido'};
+var SI={aberto:'🔵',pendente:'🟡',vencido:'🔴',prioridade:'⚡',feito:'✅'};
+
+// INDEXEDDB
+var DB={
+  db:null,
+  open:function(){var self=this;return new Promise(function(res,rej){var r=indexedDB.open('eqs_pdfs',1);r.onupgradeneeded=function(e){var db=e.target.result;if(!db.objectStoreNames.contains('pdfs'))db.createObjectStore('pdfs',{keyPath:'id'})};r.onsuccess=function(e){self.db=e.target.result;res()};r.onerror=function(){rej(r.error)}})},
+  save:function(id,data,name,size){return new Promise(function(res,rej){var tx=DB.db.transaction('pdfs','readwrite');tx.objectStore('pdfs').put({id:id,data:data,name:name,size:size});tx.oncomplete=res;tx.onerror=function(){rej(tx.error)}})},
+  get:function(id){return new Promise(function(res,rej){var tx=DB.db.transaction('pdfs','readonly');var r=tx.objectStore('pdfs').get(id);r.onsuccess=function(e){res(e.target.result)};r.onerror=function(){rej(r.error)}})},
+  del:function(id){return new Promise(function(res,rej){var tx=DB.db.transaction('pdfs','readwrite');tx.objectStore('pdfs').delete(id);tx.oncomplete=res;tx.onerror=function(){rej(tx.error)}})}
+};
+
+function loadData(){try{orders=JSON.parse(localStorage.getItem('eqs_orders')||'[]')}catch(e){orders=[]}}
+function saveData(){try{localStorage.setItem('eqs_orders',JSON.stringify(orders))}catch(e){toast('Erro ao salvar!','e')}}
+function loadUser(){curUser=localStorage.getItem('eqs_user')||''}
+function saveUser(n){localStorage.setItem('eqs_user',n);var us=getSavedUsers();if(us.indexOf(n)===-1){us.unshift(n);if(us.length>5)us.pop();localStorage.setItem('eqs_users',JSON.stringify(us))}}
+function getSavedUsers(){try{return JSON.parse(localStorage.getItem('eqs_users')||'[]')}catch(e){return[]}}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function esc(s){return s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):''}
+function fdate(s){if(!s)return'—';var p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0]}
+function isOD(s){if(!s)return false;var t=new Date();t.setHours(0,0,0,0);return new Date(s+'T00:00:00')<t}
+function daysUntil(s){if(!s)return null;var t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(s+'T00:00:00')-t)/86400000)}
+function fsize(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(1)+'MB'}
+function initials(n){return(n||'?').split(' ').map(function(w){return w[0]}).slice(0,2).join('').toUpperCase()}
+function scol(s){return{aberto:'#3D8BFF',pendente:'#B89700',vencido:'#CC0000',prioridade:'#FF6B35',feito:'#22C55E'}[s]||'#666'}
+function byS(s){return orders.filter(function(o){return o.status===s})}
+function active(){return orders.filter(function(o){return o.status!=='feito'})}
+
+function applyF(arr){
+  var r=arr.slice();
+  if(q){var lq=q.toLowerCase();r=r.filter(function(o){return(o.numeroChamado||'').toLowerCase().indexOf(lq)>-1||(o.nomeAgencia||'').toLowerCase().indexOf(lq)>-1||(o.descricao||'').toLowerCase().indexOf(lq)>-1||(o.responsavel||'').toLowerCase().indexOf(lq)>-1})}
+  if(fDe||fAte){r=r.filter(function(o){var v=o[fCampo];if(fCampo==='createdAt')v=v?v.split('T')[0]:'';if(!v)return false;if(fDe&&v<fDe)return false;if(fAte&&v>fAte)return false;return true})}
+  return r;
+}
+function sortO(arr){return arr.slice().sort(function(a,b){var p={vencido:0,prioridade:1,pendente:2,aberto:3,feito:4};var pa=p[a.status]!==undefined?p[a.status]:5,pb=p[b.status]!==undefined?p[b.status]:5;return pa-pb||new Date(b.createdAt)-new Date(a.createdAt)})}
+
+function renderAll(){updateBadges();rPainel();['aberto','pendente','vencido','prioridade','feito'].forEach(function(s){rList(s)});rHist();updateNotifs()}
+
+function updateBadges(){
+  var cols={aberto:'bb',pendente:'by',feito:'bg',prioridade:'bo',vencido:''};
+  ['aberto','pendente','vencido','prioridade','feito'].forEach(function(s){
+    var el=document.getElementById('tb-'+s);if(!el)return;
+    var c=byS(s).length;el.textContent=c;
+    var base='tbd '+(cols[s]||'');el.className=c?base+' on':base;
+  });
+  ['aberto','pendente','vencido','prioridade'].forEach(function(s){var el=document.getElementById('sn-'+s);if(el)el.textContent=byS(s).length});
+  var ac=document.getElementById('AC');if(ac){var n=active().length;ac.textContent=n?n+' OS ativa'+(n===1?'':'s'):''}
+}
+
+function rPainel(){var el=document.getElementById('list-painel');if(el){var arr=applyF(sortO(active()));el.innerHTML=arr.length?arr.map(card).join(''):emptyState('painel')}}
+function rList(s){var el=document.getElementById('list-'+s);if(el){var arr=applyF(sortO(byS(s)));el.innerHTML=arr.length?arr.map(card).join(''):emptyState(s)}}
+function rHist(){var el=document.getElementById('list-historico');if(el){var arr=applyF(sortO(orders));el.innerHTML=arr.length?arr.map(card).join(''):emptyState('historico')}}
+
+function card(o){
+  var od=o.status!=='feito'&&o.dataVencimento&&isOD(o.dataVencimento);
+  var du=daysUntil(o.dataVencimento);
+  var soon=o.status!=='feito'&&o.dataVencimento&&!od&&du!==null&&du<=2;
+  var duLbl=od?' ⚠️':du===0?' 📌 HOJE':du===1?' 📌 AMANHA':'';
+  var agencia=o.nomeAgencia||'';
+  return '<div class="oc" data-s="'+esc(o.status)+'">'
+    +'<div class="oinn">'
+    +'<div class="oto"><div class="ons">'
+    +'<span class="tag-chamado">#'+esc(o.numeroChamado)+'</span>'
+    +(agencia?'<span class="tag-sep">|</span><span class="tag-agencia">&#x1F3E2; '+esc(agencia)+'</span>':'')
+    +'</div>'
+    +'<span class="sb2 '+esc(o.status)+'">'+SI[o.status]+' '+SL[o.status]+'</span></div>'
+    +'<div class="odsc">'+esc(o.descricao)+'</div>'
+    +'<div class="ometa">'
+    +(o.responsavel?'<span class="mi"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'+esc(o.responsavel)+'</span>':'')
+    +(o.dataLancamento?'<span class="mi"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'+fdate(o.dataLancamento)+'</span>':'')
+    +(o.dataVencimento?'<span class="mi'+(od?' od':soon?' soon':'')+'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Vence: '+fdate(o.dataVencimento)+duLbl+'</span>':'')
+    +(o.hasPDF?'<span class="mi pdf">📎 PDF</span>':'')
+    +'</div>'
+    +'<div class="oact">'
+    +'<button class="btn bg2 bsm" onclick="openDet(\''+esc(o.id)+'\')">Detalhes</button>'
+    +'<button class="btn bg2 bsm" onclick="openEdit(\''+esc(o.id)+'\')">Editar</button>'
+    +(o.status!=='feito'?'<button class="btn bsu bsm" onclick="chgS(\''+esc(o.id)+'\',\'feito\')">✓ Concluir</button>':'')
+    +'<select class="ss" onchange="chgS(\''+esc(o.id)+'\',this.value);this.selectedIndex=0">'
+    +'<option value="" disabled selected>▼ Status</option>'
+    +'<option value="aberto">🔵 Em Aberto</option><option value="pendente">🟡 Pendente</option>'
+    +'<option value="vencido">🔴 Vencido</option><option value="prioridade">⚡ Prioridade</option><option value="feito">✅ Concluido</option></select>'
+    +'<button class="btn bd2 bsm" onclick="delO(\''+esc(o.id)+'\')">'
+    +'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>'
+    +'</div></div></div>';
+}
+
+function emptyState(s){
+  var m={painel:['🎉','TUDO EM DIA!','Nenhuma OS ativa no momento.'],aberto:['📋','SEM OS ABERTAS','Nenhuma OS em aberto.'],pendente:['⏳','SEM PENDENCIAS','Nenhuma OS pendente.'],vencido:['✅','TUDO EM DIA!','Nenhuma OS vencida.'],prioridade:['⚡','SEM PRIORIDADES','Nenhuma OS de prioridade.'],feito:['📁','SEM HISTORICO','OS concluidas aparecerao aqui.'],historico:['🗂️','SEM REGISTROS','Nenhuma OS cadastrada ainda.']};
+  var d=m[s]||['📋','VAZIO',''];
+  return '<div class="empty"><div class="ei">'+d[0]+'</div><h3>'+d[1]+'</h3><p>'+d[2]+'</p></div>';
+}
+
+function updateGreeting(){
+  var h=new Date().getHours(),el=document.getElementById('GT');
+  if(el)el.textContent=h<12?'BOM DIA':h<18?'BOA TARDE':'BOA NOITE';
+  var days=['Domingo','Segunda','Terca','Quarta','Quinta','Sexta','Sabado'];
+  var months=['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var now=new Date(),gd=document.getElementById('GD');
+  if(gd)gd.textContent=days[now.getDay()]+', '+now.getDate()+' de '+months[now.getMonth()]+' de '+now.getFullYear();
+}
+
+function switchTab(t){
+  tab=t;
+  document.querySelectorAll('.tb').forEach(function(b){b.classList.toggle('act',b.dataset.tab===t)});
+  document.querySelectorAll('.pn').forEach(function(p){p.classList.toggle('act',p.id==='pane-'+t)});
+  var mc=document.getElementById('MC');if(mc)mc.scrollTop=0;
+  var btn=document.querySelector('.tb[data-tab="'+t+'"]');
+  if(btn)btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+}
+document.getElementById('TN').addEventListener('click',function(e){var b=e.target.closest('.tb');if(b&&b.dataset.tab)switchTab(b.dataset.tab)});
+document.getElementById('SI').addEventListener('input',function(e){q=e.target.value.trim();renderAll()});
+
+// FILTER
+document.getElementById('FTB').addEventListener('click',function(){fOpen=!fOpen;document.getElementById('FB').classList.toggle('open',fOpen);document.getElementById('MC').classList.toggle('fo',fOpen);this.classList.toggle('on',fOpen)});
+document.getElementById('FD').addEventListener('change',applyDF);
+document.getElementById('FA').addEventListener('change',applyDF);
+document.getElementById('FC').addEventListener('change',function(e){fCampo=e.target.value;if(fDe||fAte)applyDF()});
+document.getElementById('FCL').addEventListener('click',clearFilter);
+function applyDF(){fDe=document.getElementById('FD').value;fAte=document.getElementById('FA').value;var tag=document.getElementById('FT'),txt=document.getElementById('FTT');if(fDe||fAte){var cm={dataLancamento:'Lanc.',dataVencimento:'Venc.',createdAt:'Criacao'};txt.textContent=cm[fCampo]+': '+(fDe?fdate(fDe):'—')+' → '+(fAte?fdate(fAte):'—');tag.style.display='flex'}else{tag.style.display='none'}renderAll()}
+function clearFilter(){fDe='';fAte='';document.getElementById('FD').value='';document.getElementById('FA').value='';document.getElementById('FT').style.display='none';renderAll()}
+
+// NOTIFICATIONS
+function getAlerts(){return orders.filter(function(o){if(o.status==='feito'||!o.dataVencimento)return false;var du=daysUntil(o.dataVencimento);return du<=1}).sort(function(a,b){return daysUntil(a.dataVencimento)-daysUntil(b.dataVencimento)})}
+function updateNotifs(){
+  var alerts=getAlerts();
+  var nd=document.getElementById('ND');if(nd)nd.className='ndot'+(alerts.length?' on':'');
+  var nb=document.getElementById('NB');if(nb)nb.classList.toggle('alert',!!alerts.length);
+  var nl=document.getElementById('NL');if(!nl)return;
+  if(!alerts.length){nl.innerHTML='<div class="ne">✅ Nenhuma OS vencendo nos proximos 2 dias.</div>';return}
+  nl.innerHTML=alerts.map(function(o){
+    var du=daysUntil(o.dataVencimento);
+    var bc=du<0?'nb-vc':du===0?'nb-hj':'nb-am';
+    var bt=du<0?'VENCIDA ha '+Math.abs(du)+'d':du===0?'VENCE HOJE':'VENCE AMANHA';
+    return '<div class="nit" onclick="closeNotif();openDet(\''+esc(o.id)+'\')"><div class="nibdg '+bc+'">'+bt+'</div><div class="nios">#'+esc(o.numeroChamado)+(o.nomeAgencia?' — '+esc(o.nomeAgencia):'')+'</div><div class="nimsg">'+esc(o.descricao.slice(0,60))+(o.descricao.length>60?'...':'')+'</div></div>';
+  }).join('');
+}
+function openNotif(){document.getElementById('NOV').classList.add('open');updateNotifs()}
+function closeNotif(){document.getElementById('NOV').classList.remove('open')}
+document.getElementById('NB').addEventListener('click',openNotif);
+document.getElementById('CPN').addEventListener('click',closeNotif);
+document.getElementById('NOV').addEventListener('click',function(e){if(e.target===this)closeNotif()});
+function reqNotifPerm(){if('Notification' in window&&Notification.permission==='default')Notification.requestPermission()}
+function pushNotifs(){if(!('Notification' in window)||Notification.permission!=='granted')return;getAlerts().forEach(function(o){var du=daysUntil(o.dataVencimento);var msg=du<0?'Vencida ha '+Math.abs(du)+' dia(s)':du===0?'Vence HOJE!':'Vence amanha';try{new Notification('EQS OrderTrack — #'+o.numeroChamado,{body:msg+(o.nomeAgencia?' | '+o.nomeAgencia:'')+': '+o.descricao.slice(0,60),tag:'eqs-'+o.id})}catch(e){}})}
+
+// MODAL
+function openModal(){
+  editId=null;pdfData=null;pdfFileName=null;pdfFileSize=null;
+  document.getElementById('MT').textContent='NOVA OS';
+  ['FCH','FAG','FDE','FRE','FVE'].forEach(function(id){document.getElementById(id).value=''});
+  document.getElementById('FLA').value=new Date().toISOString().split('T')[0];
+  if(curUser)document.getElementById('FRE').value=curUser;
+  document.getElementById('ra').checked=true;
+  document.getElementById('FPD').value='';
+  document.getElementById('PDP').style.display='none';
+  document.getElementById('PDA').style.display='';
+  document.getElementById('OM').classList.add('open');
+}
+function openEdit(id){
+  var o=orders.find(function(x){return x.id===id});if(!o)return;
+  editId=id;pdfData=null;pdfFileName=null;pdfFileSize=null;
+  document.getElementById('MT').textContent='EDITAR OS';
+  document.getElementById('FCH').value=o.numeroChamado||'';
+  document.getElementById('FAG').value=o.nomeAgencia||'';
+  document.getElementById('FDE').value=o.descricao||'';
+  document.getElementById('FRE').value=o.responsavel||'';
+  document.getElementById('FLA').value=o.dataLancamento||'';
+  document.getElementById('FVE').value=o.dataVencimento||'';
+  var rs=o.status==='feito'?'aberto':o.status;
+  var idMap={aberto:'ra',pendente:'rp',vencido:'rv',prioridade:'rpr'};
+  var r=document.getElementById(idMap[rs]||'ra');if(r)r.checked=true;
+  document.getElementById('FPD').value='';
+  document.getElementById('PDP').style.display='none';
+  document.getElementById('PDA').style.display='';
+  if(o.hasPDF){DB.get(id).then(function(rec){if(rec){pdfData=rec.data;pdfFileName=rec.name;pdfFileSize=rec.size;showPDFPrev(rec.name,rec.size)}}).catch(function(){})}
+  document.getElementById('OM').classList.add('open');
+}
+function closeModal(){document.getElementById('OM').classList.remove('open')}
+document.getElementById('FAB').addEventListener('click',openModal);
+document.getElementById('CMO').addEventListener('click',closeModal);
+document.getElementById('CB').addEventListener('click',closeModal);
+document.getElementById('OM').addEventListener('click',function(e){if(e.target===this)closeModal()});
+
+document.getElementById('SB').addEventListener('click',function(){
+  var cham=document.getElementById('FCH').value.trim();
+  var agencia=document.getElementById('FAG').value.trim();
+  var desc=document.getElementById('FDE').value.trim();
+  var status=(document.querySelector('input[name="rs"]:checked')||{}).value||'aberto';
+  var resp=document.getElementById('FRE').value.trim();
+  var lanc=document.getElementById('FLA').value;
+  var venc=document.getElementById('FVE').value;
+  if(!cham||!agencia||!desc){toast('Preencha os campos obrigatorios (*)','e');return}
+  var btn=this;btn.disabled=true;btn.textContent='Salvando...';
+  var resetBtn=function(){btn.disabled=false;btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar OS'};
+  var finish=function(msg){saveData();renderAll();closeModal();toast(msg,'s');resetBtn()};
+  if(editId){
+    var i=orders.findIndex(function(o){return o.id===editId});
+    if(i>-1){var old=orders[i];orders[i]=Object.assign({},old,{numeroChamado:cham,nomeAgencia:agencia,descricao:desc,status:status,responsavel:resp,dataLancamento:lanc,dataVencimento:venc,hasPDF:pdfData?true:old.hasPDF,updatedAt:new Date().toISOString()});if(pdfData)DB.save(editId,pdfData,pdfFileName,pdfFileSize).then(function(){finish('OS atualizada!')}).catch(function(){finish('OS atualizada!')});else finish('OS atualizada!')}else resetBtn();
+  }else{
+    var newId=uid();
+    orders.unshift({id:newId,numeroChamado:cham,nomeAgencia:agencia,descricao:desc,status:status,responsavel:resp,dataLancamento:lanc,dataVencimento:venc,hasPDF:!!pdfData,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});
+    if(pdfData)DB.save(newId,pdfData,pdfFileName,pdfFileSize).then(function(){finish('OS criada!')}).catch(function(){finish('OS criada!')});else finish('OS criada com sucesso!');
+  }
+});
+
+function chgS(id,ns){if(!ns)return;var i=orders.findIndex(function(o){return o.id===id});if(i===-1)return;orders[i].status=ns;orders[i].updatedAt=new Date().toISOString();saveData();renderAll();toast('Status: '+SL[ns],'s')}
+function delO(id){if(!confirm('Excluir esta OS permanentemente?'))return;orders=orders.filter(function(o){return o.id!==id});DB.del(id).catch(function(){});saveData();renderAll();toast('OS excluida.','w')}
+
+function handlePDF(input){var f=input.files[0];if(!f)return;if(f.size>10485760){toast('PDF muito grande. Max 10MB.','e');input.value='';return}var r=new FileReader();r.onload=function(e){pdfData=e.target.result;pdfFileName=f.name;pdfFileSize=f.size;showPDFPrev(f.name,f.size)};r.readAsDataURL(f)}
+function showPDFPrev(name,size){document.getElementById('PDA').style.display='none';document.getElementById('PDN').textContent=name;document.getElementById('PDS').textContent=fsize(size);document.getElementById('PDP').style.display='flex'}
+function removePDF(){pdfData=null;pdfFileName=null;pdfFileSize=null;document.getElementById('FPD').value='';document.getElementById('PDP').style.display='none';document.getElementById('PDA').style.display='';if(editId){var i=orders.findIndex(function(o){return o.id===editId});if(i>-1){orders[i].hasPDF=false;DB.del(editId).catch(function(){})}}}
+
+function openDet(id){
+  var o=orders.find(function(x){return x.id===id});if(!o)return;
+  document.getElementById('DT').textContent='#'+o.numeroChamado+(o.nomeAgencia?' — '+o.nomeAgencia:'');
+  var od=o.dataVencimento&&isOD(o.dataVencimento)&&o.status!=='feito';
+  document.getElementById('DB').innerHTML=
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">'
+    +'<span class="sb2 '+esc(o.status)+'">'+SI[o.status]+' '+SL[o.status]+'</span>'
+    +(o.nomeAgencia?'<span class="tag-agencia">🏢 '+esc(o.nomeAgencia)+'</span>':'')
+    +'</div>'
+    +'<div class="fl" style="margin-bottom:6px">DESCRICAO</div>'
+    +'<div class="dd">'+esc(o.descricao)+'</div>'
+    +'<div class="dg">'
+    +'<div class="df"><label>CHAMADO</label><p>#'+esc(o.numeroChamado)+'</p></div>'
+    +'<div class="df"><label>RESPONSAVEL</label><p>'+esc(o.responsavel||'—')+'</p></div>'
+    +'<div class="df"><label>LANCAMENTO</label><p>'+fdate(o.dataLancamento)+'</p></div>'
+    +'<div class="df"><label>VENCIMENTO</label><p class="'+(od?'od':'')+'">'+fdate(o.dataVencimento)+'</p></div>'
+    +'</div>'
+    +(o.hasPDF?'<div class="fg"><div class="fl" style="margin-bottom:8px">ANEXO PDF</div><div id="dpdf-'+esc(id)+'"><div style="color:var(--g5);font-size:13px">Carregando...</div></div></div>':'')
+    +'<div class="mft">'
+    +'<button class="btn bg2" onclick="closeDet();setTimeout(function(){openEdit(\''+esc(id)+'\')},180)">✏️ Editar</button>'
+    +(o.status!=='feito'?'<button class="btn bsu" onclick="closeDet();chgS(\''+esc(id)+'\',\'feito\')">✓ Concluir OS</button>':'')
+    +'</div>';
+  document.getElementById('DM').classList.add('open');
+  if(o.hasPDF){DB.get(id).then(function(rec){if(rec){var el=document.getElementById('dpdf-'+id);if(el)el.innerHTML='<div class="pdp"><div class="pdi2">📄</div><div class="pdin"><div class="pdn">'+esc(rec.name)+'</div><div class="pds">'+fsize(rec.size)+'</div></div><button class="btn bg2 bsm" onclick="viewPDF(\''+esc(id)+'\')">Ver</button><button class="btn bg2 bsm" onclick="dlPDF(\''+esc(id)+'\')">Baixar</button></div>'}}).catch(function(){})}
+}
+function closeDet(){document.getElementById('DM').classList.remove('open')}
+document.getElementById('CDM').addEventListener('click',closeDet);
+document.getElementById('DM').addEventListener('click',function(e){if(e.target===this)closeDet()});
+function viewPDF(id){DB.get(id).then(function(rec){if(!rec){toast('PDF nao encontrado.','e');return}var w=window.open('','_blank');w.document.write('<!DOCTYPE html><html><head><title>'+esc(rec.name)+'</title></head><body style="margin:0"><iframe src="'+rec.data+'" style="width:100%;height:100vh;border:none"></iframe></body></html>')}).catch(function(){toast('Erro ao visualizar PDF.','e')})}
+function dlPDF(id){DB.get(id).then(function(rec){if(!rec){toast('PDF nao encontrado.','e');return}var a=document.createElement('a');a.href=rec.data;a.download=rec.name;a.click()}).catch(function(){toast('Erro ao baixar PDF.','e')})}
+
+function exportExcel(){
+  var arr=applyF(sortO(tab==='historico'?orders:active()));
+  if(!arr.length){toast('Nenhuma OS para exportar.','w');return}
+  if(typeof XLSX==='undefined'){toast('XLSX nao disponivel.','e');return}
+  var rows=arr.map(function(o){return{'Chamado':'#'+o.numeroChamado,'Agencia':o.nomeAgencia||'','Status':SL[o.status],'Descricao':o.descricao,'Responsavel':o.responsavel||'','Lancamento':fdate(o.dataLancamento),'Vencimento':fdate(o.dataVencimento),'PDF':o.hasPDF?'Sim':'Nao','Criado em':new Date(o.createdAt).toLocaleDateString('pt-BR')}});
+  try{var ws=XLSX.utils.json_to_sheet(rows);var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'OS');ws['!cols']=[{wch:12},{wch:24},{wch:12},{wch:50},{wch:20},{wch:14},{wch:14},{wch:6},{wch:14}];XLSX.writeFile(wb,'EQS_OrderTrack_'+new Date().toISOString().split('T')[0]+'.xlsx');toast('Excel exportado!','s')}catch(e){toast('Erro ao exportar.','e')}
+}
+function exportPDF(){
+  var arr=applyF(sortO(tab==='historico'?orders:active()));
+  if(!arr.length){toast('Nenhuma OS para exportar.','w');return}
+  var dt=new Date().toLocaleDateString('pt-BR');
+  var rows=arr.map(function(o){return'<tr><td>#'+esc(o.numeroChamado)+'</td><td>'+esc(o.nomeAgencia||'—')+'</td><td><span style="background:'+scol(o.status)+';color:#fff;padding:2px 8px;border-radius:4px;font-size:11px">'+SL[o.status]+'</span></td><td>'+esc(o.descricao)+'</td><td>'+esc(o.responsavel||'—')+'</td><td>'+fdate(o.dataLancamento)+'</td><td>'+fdate(o.dataVencimento)+'</td></tr>'}).join('');
+  var html='<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>EQS OrderTrack</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:12px;color:#111;padding:20px}.hd{display:flex;align-items:center;gap:16px;margin-bottom:20px;border-bottom:2px solid #CC0000;padding-bottom:14px}.hl{background:#CC0000;color:#fff;padding:8px 14px;border-radius:8px;font-weight:900;font-size:18px;letter-spacing:2px}.hi h1{font-size:18px;color:#CC0000}.hi p{font-size:11px;color:#666;margin-top:2px}table{width:100%;border-collapse:collapse}th{background:#CC0000;color:#fff;padding:7px 8px;text-align:left;font-size:11px}td{padding:6px 8px;border-bottom:1px solid #eee;font-size:11.5px;vertical-align:top}tr:nth-child(even) td{background:#fafafa}.ft{margin-top:20px;font-size:10px;color:#aaa;text-align:center}</style></head><body>'
+    +'<div class="hd"><div class="hl">EQS</div><div class="hi"><h1>ORDERTRACK — RELATORIO DE OS</h1><p>EQS Engenharia | Gerado em: '+dt+' | Total: '+arr.length+' OS</p></div></div>'
+    +'<table><thead><tr><th>Chamado</th><th>Agencia</th><th>Status</th><th>Descricao</th><th>Responsavel</th><th>Lancamento</th><th>Vencimento</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    +'<div class="ft">EQS Engenharia — EQS OrderTrack | '+dt+'</div>'
+    +'<script>window.onload=function(){window.print()}<\/script></body></html>';
+  var w=window.open('','_blank');w.document.write(html);w.document.close();toast('PDF gerado!','s');
+}
+
+function toast(msg,type){
+  type=type||'s';var ico={s:'✅',e:'❌',w:'⚠️'};
+  var el=document.createElement('div');el.className='toast '+type;
+  el.innerHTML='<span class="ti">'+(ico[type]||'ℹ️')+'</span><span>'+esc(msg)+'</span>';
+  document.getElementById('TW').appendChild(el);
+  setTimeout(function(){el.style.animation='tOut .28s ease forwards';setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el)},300)},3500);
+}
+
+// LOGIN
+function renderSU(){
+  var us=getSavedUsers(),wrap=document.getElementById('SU');
+  if(!us.length){wrap.innerHTML='';return}
+  wrap.innerHTML='<div class="su-lbl">Acessos recentes</div><div class="su-list">'+us.map(function(u){return'<button class="su-btn" onclick="doLogin(\''+esc(u)+'\')"><div class="su-av">'+initials(u)+'</div>'+esc(u)+'</button>'}).join('')+'</div><div class="l-div">ou entre com outro nome</div>';
+}
+function doLogin(name){
+  var n=(name||document.getElementById('LI').value).trim();
+  if(!n){var inp=document.getElementById('LI');inp.focus();inp.style.borderColor='var(--red)';return}
+  curUser=n;saveUser(n);
+  document.getElementById('LS').style.display='none';
+  document.getElementById('AS').style.display='';
+  document.getElementById('UN').textContent=n.split(' ')[0];
+  document.getElementById('UA').textContent=initials(n);
+  updateGreeting();renderAll();reqNotifPerm();
+  setTimeout(function(){updateNotifs();var a=getAlerts();if(a.length)toast('⚠️ '+a.length+' OS vencendo em breve!','w')},800);
+  setTimeout(pushNotifs,3500);
+}
+document.getElementById('LB').addEventListener('click',function(){doLogin('')});
+document.getElementById('LI').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin('')});
+document.getElementById('UC').addEventListener('click',function(){if(!confirm('Trocar de usuario?'))return;document.getElementById('AS').style.display='none';document.getElementById('LS').style.display='flex';document.getElementById('LI').value='';renderSU()});
+
+// PWA INSTALL + SERVICE WORKER
+var deferredPrompt=null;
+var installBanner=document.getElementById('installBanner');
+var installTitle=document.getElementById('installTitle');
+var installText=document.getElementById('installText');
+var installBtn=document.getElementById('installBtn');
+var closeBanner=document.getElementById('closeBanner');
+
+function isIOSDevice(){
+  var ua=navigator.userAgent||'';
+  return /iphone|ipad|ipod/i.test(ua)||((navigator.platform==='MacIntel'||navigator.platform==='Mac68K'||navigator.platform==='MacPPC')&&navigator.maxTouchPoints>1);
+}
+function isAndroidDevice(){return /android/i.test(navigator.userAgent||'')}
+function isStandaloneMode(){return window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}
+function setInstallBanner(title,text,buttonText,showButton){
+  if(!installBanner||isStandaloneMode())return;
+  if(installTitle)installTitle.textContent=title;
+  if(installText)installText.textContent=text;
+  if(installBtn){
+    installBtn.textContent=buttonText||'OK';
+    installBtn.style.display=showButton?'':'none';
+  }
+  installBanner.style.display='flex';
+}
+function showManualInstallHelp(){
+  if(isStandaloneMode())return;
+  if(isIOSDevice()){
+    setInstallBanner('INSTALAR NO IOS','Toque em Compartilhar e depois em Adicionar à Tela de Início.','ENTENDI',true);
+  }else if(isAndroidDevice()){
+    setInstallBanner('AGUARDANDO CHROME','Se o botão INSTALAR não aparecer, abra o menu ⋮ e toque em Adicionar à tela inicial.','',false);
+  }
+}
+
+window.addEventListener('beforeinstallprompt',function(event){
+  event.preventDefault();
+  deferredPrompt=event;
+  setInstallBanner('INSTALAR APP','Toque em INSTALAR para adicionar o EQS OrderTrack como aplicativo.','INSTALAR',true);
+});
+
+window.addEventListener('appinstalled',function(){
+  deferredPrompt=null;
+  if(installBanner)installBanner.style.display='none';
+  toast('App instalado com sucesso!','s');
+});
+
+if(installBtn){
+  installBtn.addEventListener('click',function(){
+    if(!deferredPrompt){
+      showManualInstallHelp();
+      return;
+    }
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(choice){
+      if(choice.outcome==='accepted')toast('Instalando o app...','s');
+      deferredPrompt=null;
+      if(installBanner)installBanner.style.display='none';
+    });
+  });
+}
+if(closeBanner){
+  closeBanner.addEventListener('click',function(){
+    if(installBanner)installBanner.style.display='none';
+    try{sessionStorage.setItem('eqs_install_closed','1')}catch(e){}
+  });
+}
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('./sw.js',{scope:'./'}).then(function(){
+      return navigator.serviceWorker.ready;
+    }).then(function(){
+      if(!navigator.serviceWorker.controller&&!sessionStorage.getItem('eqs_sw_reloaded')){
+        sessionStorage.setItem('eqs_sw_reloaded','1');
+        window.location.reload();
+        return;
+      }
+      setTimeout(function(){
+        try{if(sessionStorage.getItem('eqs_install_closed')==='1')return}catch(e){}
+        if(!deferredPrompt)showManualInstallHelp();
+      },2200);
+    }).catch(function(err){
+      console.warn('[EQS] Service Worker falhou:',err);
+      showManualInstallHelp();
+    });
+  });
+}
+
+// INIT
+DB.open().catch(function(){}).then(function(){
+  loadData();renderSU();loadUser();
+  if(curUser)doLogin(curUser);
+  setInterval(function(){updateGreeting();updateNotifs()},60000);
+});
+</script>
+</body>
+</html>

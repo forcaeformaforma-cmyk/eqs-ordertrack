@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#CC0000"/>
+      <stop offset="100%" stop-color="#8A0000"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#g)"/>
+  <text x="256" y="225" font-family="Arial Black,Arial" font-size="140" font-weight="900" fill="white" text-anchor="middle" dominant-baseline="middle">EQS</text>
+  <text x="256" y="360" font-family="Arial,sans-serif" font-size="70" font-weight="700" fill="rgba(255,255,255,0.85)" text-anchor="middle" dominant-baseline="middle">ORDER</text>
+  <rect x="56" y="395" width="400" height="5" rx="2.5" fill="rgba(255,255,255,0.25)"/>
+</svg>
